@@ -1,174 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Queue</title>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PPintar - Antrian Layanan Publik</title>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #6A11CB, #2575FC);
-            height: 100vh;
-            color: #333;
-        }
-
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .card {
-            background: white;
-            width: 400px;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            animation: fadeIn 0.7s ease;
-        }
-
-        h1, h2 {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        p {
-            opacity: 0.8;
-        }
-
-        select, button {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            border: none;
-            margin-top: 13px;
-            outline: none;
-        }
-
-        select {
-            background: #f3f3f3;
-        }
-
-        button {
-            background: #2575FC;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #1a5fd6;
-        }
-
-        .antrian-box {
-            font-size: 50px;
-            font-weight: bold;
-            color: #2575FC;
-            margin: 20px 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
     </style>
 
-    <script>
-        let userData = null;
-
-        function handleCredentialResponse(response) {
-            const data = parseJwt(response.credential);
-            userData = data;
-
-            document.getElementById("login-page").style.display = "none";
-            document.getElementById("main-page").style.display = "flex";
-
-            document.getElementById("username").innerText = data.name;
-        }
-
-        function parseJwt(token) {
-            return JSON.parse(atob(token.split('.')[1]));
-        }
-
-        function ambilAntrian() {
-            const layanan = document.getElementById("layanan").value;
-            if (!layanan) return alert("Pilih layanan dulu!");
-
-            const nomor = "A-" + Math.floor(Math.random() * 100 + 1);
-            const wait = Math.floor(Math.random() * 20 + 10);
-
-            document.getElementById("nomorAntrian").innerText = nomor;
-            document.getElementById("estimasi").innerText = wait + " menit";
-            document.getElementById("layananInfo").innerText = layanan;
-
-            document.getElementById("main-page").style.display = "none";
-            document.getElementById("status-page").style.display = "flex";
-        }
+    <!-- Import Maps -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+      }
+    }
     </script>
-</head>
 
-<body>
+    <!-- ❗ WAJIB: Google Sign-In Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<!-- LOGIN PAGE -->
-<div id="login-page" class="center">
-    <div class="card">
-        <h1 style="color:#2575FC;">Smart Queue</h1>
-        <p>Sistem Antrian Pintar • Login dengan Google</p>
+    <link rel="stylesheet" href="/index.css">
+  </head>
 
-        <div id="g_id_onload"
-             data-client_id="CLIENT_ID_KAMU"
-             data-context="signin"
-             data-callback="handleCredentialResponse">
-        </div>
-
-        <div class="g_id_signin" data-type="standard" data-size="large"></div>
-    </div>
-</div>
-
-
-<!-- MAIN PAGE -->
-<div id="main-page" class="center" style="display:none;">
-    <div class="card">
-        <h2>Halo, <span id="username"></span> 👋</h2>
-        <p>Pilih layanan untuk mengambil nomor antrian</p>
-
-        <select id="layanan">
-            <option value="">-- Pilih Layanan --</option>
-            <option>Pembuatan KTP</option>
-            <option>Perpanjang SIM</option>
-            <option>Pembuatan Paspor</option>
-            <option>Klinik / Puskesmas</option>
-            <option>BPJS Kesehatan</option>
-        </select>
-
-        <button onclick="ambilAntrian()">Ambil Nomor Antrian</button>
-    </div>
-</div>
-
-
-<!-- STATUS PAGE -->
-<div id="status-page" class="center" style="display:none;">
-    <div class="card">
-        <h2>Status Antrian</h2>
-
-        <p>Layanan: <b id="layananInfo"></b></p>
-
-        <div class="antrian-box" id="nomorAntrian"></div>
-
-        <p>Estimasi dipanggil dalam <b id="estimasi"></b></p>
-
-        <button onclick="location.reload()">Kembali</button>
-    </div>
-</div>
-
-</body>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
